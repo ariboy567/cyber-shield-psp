@@ -1,194 +1,234 @@
-import { Link } from "react-router-dom";
-import { Shield, BookOpen, Gamepad2, Users, AlertTriangle, TrendingUp, Heart, ArrowRight, Bell } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import MainLayout from "@/components/layout/MainLayout";
-import PageHero from "@/components/shared/PageHero";
-import StatCard from "@/components/shared/StatCard";
+import { useEffect, useRef } from "react";
+import { Shield, BookOpen, Users, ArrowRight, MessageCircle } from "lucide-react";
+import Navbar from "@/components/layout/Navbar";
+import ShieldSVG from "@/components/ShieldSVG";
 
-const quickAccessCards = [
-  {
-    icon: Gamepad2,
-    title: "Quizzes",
-    description: "Testa os teus conhecimentos sobre segurança online",
-    href: "/quizzes",
-    color: "text-primary",
-    bg: "bg-primary-pale",
-  },
+const WHATSAPP_URL = "https://wa.me/351999999999?text=Ol%C3%A1+PSP+preciso+de+ajuda";
+
+const stats = [
+  { number: "1 em 3", label: "jovens sofreu ciberbullying" },
+  { number: "72%", label: "não pedem ajuda a ninguém" },
+  { number: "24h", label: "A PSP responde em 24 horas" },
+];
+
+const paths = [
   {
     icon: Shield,
-    title: "Como te Proteger",
-    description: "Dicas práticas para te manteres seguro na internet",
-    href: "/proteger",
-    color: "text-success",
-    bg: "bg-success/10",
+    title: "Preciso de ajuda",
+    description: "Fala connosco agora pelo WhatsApp",
+    href: WHATSAPP_URL,
+    external: true,
   },
   {
-    icon: AlertTriangle,
-    title: "Como Agir",
-    description: "O que fazer se fores vítima de ciberbullying",
-    href: "/agir",
-    color: "text-warning",
-    bg: "bg-warning/10",
+    icon: BookOpen,
+    title: "Quero aprender",
+    description: "Quizzes e guias de cibersegurança",
+    href: "/quizzes",
+    external: false,
+  },
+  {
+    icon: Users,
+    title: "Ver alertas PSP",
+    description: "Publicações e recomendações da PSP",
+    href: "/comunidade",
+    external: false,
   },
 ];
 
-const alerts = [
-  {
-    id: 1,
-    title: "Cuidado com links suspeitos no Instagram",
-    date: "20 Mar 2026",
-    category: "Alerta",
-  },
-  {
-    id: 2,
-    title: "Como identificar perfis falsos no TikTok",
-    date: "18 Mar 2026",
-    category: "Dica",
-  },
-  {
-    id: 3,
-    title: "Nova campanha contra o ciberbullying nas escolas",
-    date: "15 Mar 2026",
-    category: "Notícia",
-  },
+const steps = [
+  "Carregas no botão",
+  "WhatsApp abre",
+  "Respondes às perguntas",
+  "PSP recebe e age",
 ];
 
 const Index = () => {
-  return (
-    <MainLayout>
-      {/* Hero */}
-      <PageHero
-        title="Não estás sozinho."
-        subtitle="A PSP está aqui para te ajudar. Aprende a proteger-te online e, se precisares, fala connosco — em total confidencialidade."
-        gradient
-      >
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button variant="hero" size="lg" className="text-base px-8 py-6 rounded-full" asChild>
-            <a
-              href="https://wa.me/351999999999?text=Ol%C3%A1+PSP+preciso+de+ajuda"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Heart className="h-5 w-5 mr-1" />
-              Preciso de Ajuda
-            </a>
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="text-base px-8 py-6 rounded-full border-white/30 text-primary-foreground hover:bg-white/10 hover:text-primary-foreground"
-            asChild
-          >
-            <Link to="/quizzes">
-              <Gamepad2 className="h-5 w-5 mr-1" />
-              Fazer um Quiz
-            </Link>
-          </Button>
-        </div>
-      </PageHero>
+  const sectionsRef = useRef<HTMLDivElement>(null);
 
-      {/* Quick access cards */}
-      <section className="container py-16">
-        <h2 className="text-center font-display text-2xl font-bold sm:text-3xl mb-10">
-          Explora e aprende
-        </h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {quickAccessCards.map((card) => (
-            <Link
-              key={card.href}
-              to={card.href}
-              className="group flex flex-col gap-4 rounded-xl border border-border bg-card p-6 shadow-psp transition-all hover:shadow-psp-lg hover:-translate-y-1"
-            >
-              <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${card.bg}`}>
-                <card.icon className={`h-6 w-6 ${card.color}`} />
-              </div>
-              <div>
-                <h3 className="font-display text-lg font-semibold">{card.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{card.description}</p>
-              </div>
-              <span className="mt-auto flex items-center gap-1 text-sm font-medium text-primary group-hover:gap-2 transition-all">
-                Explorar <ArrowRight className="h-4 w-4" />
-              </span>
-            </Link>
-          ))}
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    const sections = sectionsRef.current?.querySelectorAll(".fade-section");
+    sections?.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div className="grain min-h-screen bg-background" ref={sectionsRef}>
+      <Navbar />
+
+      {/* ─── HERO ─── */}
+      <section className="relative flex min-h-screen items-center overflow-hidden">
+        <div className="container relative z-10 flex flex-col lg:flex-row items-center gap-12 pt-16">
+          {/* Left content */}
+          <div className="flex-[3] space-y-8">
+            <p className="font-body text-[13px] font-medium uppercase tracking-[0.3em] text-primary">
+              PSP · Escudo Digital
+            </p>
+
+            <h1 className="font-display text-hero leading-[0.95]">
+              <span className="block">SE ESTÁS</span>
+              <span className="block">A PASSAR</span>
+              <span className="block">POR ISTO —</span>
+            </h1>
+
+            <p className="max-w-md font-body text-xl text-muted-foreground leading-relaxed">
+              Não estás sozinho. A PSP está aqui.
+            </p>
+
+            <div className="flex flex-wrap gap-4 pt-2">
+              <a
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-2 rounded-md bg-primary px-7 py-3.5 font-body text-sm font-semibold text-primary-foreground glow-cobalt transition-all hover:scale-[1.02]"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Preciso de Ajuda
+              </a>
+              <a
+                href="#paths"
+                className="inline-flex items-center gap-2 rounded-md border border-border px-7 py-3.5 font-body text-sm font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+              >
+                Saber mais
+              </a>
+            </div>
+          </div>
+
+          {/* Right — Shield */}
+          <div className="hidden flex-[2] lg:flex items-center justify-center">
+            <div className="w-full max-w-[380px]">
+              <ShieldSVG />
+            </div>
+          </div>
         </div>
+
+        {/* Cobalt ambient glow behind shield */}
+        <div className="pointer-events-none absolute right-[10%] top-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-primary/5 blur-[120px]" />
       </section>
 
-      {/* Stats */}
-      <section className="bg-muted py-16">
+      {/* ─── STATS ─── */}
+      <section className="fade-section py-24 lg:py-32">
         <div className="container">
-          <h2 className="text-center font-display text-2xl font-bold sm:text-3xl mb-10">
-            O nosso impacto
-          </h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard icon={Users} value="2.500+" label="Jovens ajudados" />
-            <StatCard icon={BookOpen} value="120+" label="Conteúdos educativos" />
-            <StatCard icon={Gamepad2} value="8.000+" label="Quizzes completados" />
-            <StatCard icon={TrendingUp} value="95%" label="Taxa de satisfação" />
+          <div className="grid gap-6 md:grid-cols-3">
+            {stats.map((stat, i) => (
+              <div
+                key={i}
+                className="rounded-md border-l-2 border-l-primary bg-card p-8"
+              >
+                <span className="block font-display text-stat text-foreground">
+                  {stat.number}
+                </span>
+                <span className="mt-2 block font-body text-sm text-muted-foreground">
+                  {stat.label}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Alerts feed */}
-      <section className="container py-16">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="font-display text-2xl font-bold sm:text-3xl">
-            Alertas e dicas
+      {/* ─── THREE PATHS ─── */}
+      <section id="paths" className="fade-section py-24 lg:py-32">
+        <div className="container">
+          <h2 className="font-display text-section mb-14">
+            O que queres fazer agora?
           </h2>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/comunidade">
-              Ver todos <ArrowRight className="h-4 w-4 ml-1" />
-            </Link>
-          </Button>
-        </div>
-        <div className="grid gap-4">
-          {alerts.map((alert) => (
-            <div
-              key={alert.id}
-              className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent/50"
-            >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-pale">
-                <Bell className="h-5 w-5 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-semibold truncate">{alert.title}</h4>
-                <p className="text-xs text-muted-foreground">{alert.date}</p>
-              </div>
-              <span className="hidden sm:inline-flex rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-accent-foreground">
-                {alert.category}
-              </span>
-            </div>
-          ))}
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {paths.map((path, i) => {
+              const Tag = path.external ? "a" : "a";
+              const linkProps = path.external
+                ? { href: path.href, target: "_blank", rel: "noopener noreferrer" }
+                : { href: path.href };
+
+              return (
+                <Tag
+                  key={i}
+                  {...linkProps}
+                  className="group flex flex-col justify-between rounded-md border border-border bg-card p-8 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:glow-cobalt-sm"
+                >
+                  <div>
+                    <path.icon className="h-6 w-6 text-primary mb-6" />
+                    <h3 className="font-display text-2xl tracking-wide mb-2 normal-case">{path.title}</h3>
+                    <p className="font-body text-sm text-muted-foreground">{path.description}</p>
+                  </div>
+                  <div className="mt-8 flex items-center gap-1 text-sm text-muted-foreground transition-all group-hover:text-primary group-hover:gap-2">
+                    <ArrowRight className="h-4 w-4" />
+                  </div>
+                </Tag>
+              );
+            })}
+          </div>
         </div>
       </section>
 
-      {/* CTA banner */}
-      <section className="bg-gradient-hero py-16 text-primary-foreground">
-        <div className="container text-center">
-          <h2 className="font-display text-2xl font-bold sm:text-3xl">
-            Precisas de falar com alguém?
+      {/* ─── HOW IT WORKS ─── */}
+      <section className="fade-section py-24 lg:py-32">
+        <div className="container">
+          <h2 className="font-display text-section text-center mb-20">
+            Como funciona a denúncia
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-white/80">
-            Não tenhas medo. A PSP está preparada para te ajudar de forma confidencial e segura.
-          </p>
-          <Button
-            variant="hero"
-            size="lg"
-            className="mt-8 text-base px-8 py-6 rounded-full bg-white/20 hover:bg-white/30 border border-white/20"
-            asChild
-          >
-            <a
-              href="https://wa.me/351999999999?text=Ol%C3%A1+PSP+preciso+de+ajuda"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Heart className="h-5 w-5 mr-1" />
-              Preciso de Ajuda
-            </a>
-          </Button>
+
+          <div className="relative flex flex-col items-center gap-12 md:flex-row md:justify-between md:gap-0">
+            {/* Connecting line */}
+            <div className="absolute top-6 left-[10%] right-[10%] hidden h-px bg-border md:block" />
+
+            {steps.map((step, i) => (
+              <div key={i} className="relative z-10 flex flex-col items-center text-center md:flex-1">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-primary bg-background font-display text-xl text-primary">
+                  {i + 1}
+                </div>
+                <span className="mt-4 max-w-[140px] font-body text-sm text-muted-foreground">
+                  {step}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
-    </MainLayout>
+
+      {/* ─── FINAL CTA ─── */}
+      <section className="fade-section py-24 lg:py-32">
+        <div className="container text-center">
+          <h2 className="font-display text-section mx-auto max-w-lg mb-10">
+            Quando precisares, estaremos aqui.
+          </h2>
+
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-8 py-4 font-body text-sm font-semibold text-primary-foreground glow-cobalt transition-all hover:scale-[1.02]"
+          >
+            <MessageCircle className="h-4 w-4" />
+            Falar com a PSP agora
+          </a>
+
+          <p className="mt-6 font-body text-xs tracking-widest uppercase text-muted-foreground">
+            Confidencial · Seguro · Gratuito
+          </p>
+        </div>
+      </section>
+
+      {/* Minimal footer line */}
+      <footer className="border-t border-border py-8">
+        <div className="container text-center">
+          <p className="font-body text-xs text-muted-foreground">
+            © {new Date().getFullYear()} Polícia de Segurança Pública — Escudo Digital
+          </p>
+        </div>
+      </footer>
+    </div>
   );
 };
 
