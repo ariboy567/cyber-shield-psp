@@ -23,7 +23,7 @@ const paths = [
     icon: BookOpen,
     title: "Quero aprender",
     description: "Quizzes e guias de cibersegurança",
-    href: "/quizzes",
+    href: "/quiz",
     external: false,
   },
   {
@@ -82,7 +82,7 @@ const Index = () => {
             </h1>
 
             <p className="max-w-md font-body text-xl text-muted-foreground leading-relaxed">
-              Não estás sozinho. A PSP está aqui.
+              Não estás sozinho. A PSP está aqui para te ajudar a combater o cyberbullying.
             </p>
 
             <div className="flex flex-wrap gap-4 pt-2">

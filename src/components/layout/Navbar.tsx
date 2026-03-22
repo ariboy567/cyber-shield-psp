@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import LoginModal from "./LoginModal";
 
 const navLinks = [
-  { label: "Como te Proteger", href: "/proteger" },
-  { label: "Quizzes", href: "/quizzes" },
+  { label: "Como te Proteger", href: "/proteccao" },
+  { label: "Quizzes", href: "/quiz" },
   { label: "Comunidade", href: "/comunidade" },
   { label: "Ajuda", href: "/ajuda" },
 ];
@@ -29,7 +30,7 @@ const Navbar = () => {
         <div className="container flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
             <div className="flex h-7 w-7 items-center justify-center rounded border border-primary/40">
-              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="hsl(224 85% 53%)" strokeWidth="2">
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="hsl(var(--primary))" strokeWidth="2">
                 <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" />
               </svg>
             </div>
@@ -49,12 +50,13 @@ const Navbar = () => {
                 {link.label}
               </Link>
             ))}
-            <Link
-              to="/login"
-              className="rounded border border-border px-4 py-1.5 font-body text-sm text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
-            >
-              Entrar
-            </Link>
+            <LoginModal>
+              <button
+                className="rounded border border-border px-4 py-1.5 font-body text-sm text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+              >
+                Entrar
+              </button>
+            </LoginModal>
           </nav>
 
           {/* Mobile toggle */}
@@ -82,13 +84,14 @@ const Navbar = () => {
                 {link.label}
               </Link>
             ))}
-            <Link
-              to="/login"
-              onClick={() => setMenuOpen(false)}
-              className="mt-6 flex items-center justify-center rounded border border-border py-3 font-body text-sm text-muted-foreground"
-            >
-              Entrar
-            </Link>
+            <LoginModal>
+              <button
+                onClick={() => setMenuOpen(false)}
+                className="mt-6 flex items-center justify-center rounded border border-border py-3 font-body text-sm text-muted-foreground"
+              >
+                Entrar
+              </button>
+            </LoginModal>
           </nav>
         </div>
       )}
