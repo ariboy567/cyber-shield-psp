@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Menu, X, Shield, Bell, LogOut, ChevronRight, MessageSquare, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, X, Shield, Bell, LogOut, ChevronRight, MessageSquare, Clock, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 const mockDenuncias = [
   {
@@ -40,6 +42,47 @@ const mockDenuncias = [
 ];
 
 const Denuncias = () => {
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/");
+        return;
+      }
+      setUser(user);
+
+      // Buscar perfil real
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      setProfile(profileData);
+      setLoading(false);
+    };
+
+    checkUser();
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="grain min-h-screen bg-background">
       <Navbar />
@@ -48,7 +91,7 @@ const Denuncias = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
           <div>
             <p className="font-body text-[13px] font-medium uppercase tracking-[0.3em] text-primary mb-2">
-              Painel do Cidadão
+              Painel do Cidadão {profile?.full_name ? `· ${profile.full_name}` : ""}
             </p>
             <h1 className="font-display text-section tracking-tight">As Minhas Denúncias</h1>
           </div>
@@ -57,10 +100,13 @@ const Denuncias = () => {
               <Bell className="h-5 w-5 text-muted-foreground" />
               <span className="absolute top-0 right-0 h-2.5 w-2.5 rounded-full bg-primary border-2 border-background" />
             </div>
-            <Link to="/" className="flex items-center gap-2 rounded-md border border-border px-4 py-2 font-body text-sm font-medium text-muted-foreground transition-colors hover:border-red-500/50 hover:text-red-500">
+            <button 
+              onClick={handleLogout}
+              className="flex items-center gap-2 rounded-md border border-border px-4 py-2 font-body text-sm font-medium text-muted-foreground transition-colors hover:border-red-500/50 hover:text-red-500"
+            >
               <LogOut className="h-4 w-4" />
               Sair
-            </Link>
+            </button>
           </div>
         </div>
 
